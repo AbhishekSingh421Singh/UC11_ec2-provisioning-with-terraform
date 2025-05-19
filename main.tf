@@ -9,26 +9,6 @@ data "aws_subnets" "default" {
   }
 }
 
-resource "aws_instance" "nginx_server" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  subnet_id     = data.aws_subnets.default.ids[0]
-  key_name      = var.key_name
-  vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
-  
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo apt update -y
-              sudo apt install nginx -y
-              sudo systemctl start nginx
-              sudo systemctl enable nginx
-              EOF
-
-  tags = {
-    Name = "nginx-server"
-  }
-}
-
 resource "aws_security_group" "allow_ssh_http" {
   name        = "allow_ssh_http"
   description = "Allow SSH and HTTP"
@@ -52,5 +32,25 @@ resource "aws_security_group" "allow_ssh_http" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "nginx_server" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  subnet_id              = data.aws_subnets.default.ids[0]
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt update -y
+              sudo apt install nginx -y
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+              EOF
+
+  tags = {
+    Name = "nginx-server"
   }
 }
