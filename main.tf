@@ -15,6 +15,14 @@ resource "aws_instance" "nginx_server" {
   subnet_id     = data.aws_subnets.default.ids[0]
   key_name      = var.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
+  
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt update -y
+              sudo apt install nginx -y
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+              EOF
 
   tags = {
     Name = "nginx-server"
