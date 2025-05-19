@@ -14,7 +14,7 @@ resource "aws_instance" "nginx_server" {
   instance_type = var.instance_type
   subnet_id     = data.aws_subnets.default.ids[0]
   key_name      = var.key_name
-  security_groups = [aws_security_group.allow_ssh_http.name]
+  vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
 
   tags = {
     Name = "nginx-server"
