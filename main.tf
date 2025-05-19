@@ -1,17 +1,17 @@
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnet_ids" "default" {
+  vpc_id = data.aws_vpc.default.id
+}
+
 resource "aws_instance" "nginx_server" {
   ami           = var.ami_id
   instance_type = var.instance_type
+  subnet_id     = data.aws_subnet_ids.default.ids[0]  # Use the first available subnet
   key_name      = var.key_name
-
-  user_data = <<-EOF
-              #!/bin/bash
-              apt update -y
-              apt install -y nginx
-              systemctl start nginx
-              systemctl enable nginx
-            EOF
-
-  vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
+  security_groups = [aws_security_group.allow_ssh_http.name]
 
   tags = {
     Name = "nginx-server"
