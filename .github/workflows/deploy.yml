@@ -1,4 +1,4 @@
-name: Terraform Infra CI/CD
+name: Terraform Infra
 
 on:
  push:
